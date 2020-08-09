@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+	<head>
+		<meta charset="utf-8" />
+		<title>Jamulus Server History Graph</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"></script>
+		<script src="js/jquery.timer.js"></script>
+		<script src="js/history_graph.js"></script>
+		<script src="js/history_controller.js"></script>
+		<meta name="description" content="Server connection history graph" />
+		<meta name="googlebot" content="noarchive" />
+		<meta name="keywords" content="Jamulus, connections, history" />
+		<meta name="author" content="Peter L Jones" />
+	</head>
+	<body>
+		<p class="no_script">Please note that this page <strong>requires</strong> JavaScript enabled.</p>
+
+		<div style="margin: 0.2em;"><!--{--><div id="jamulus_history" style="margin: 0; border: thick solid #eeeeff;">
+			<h2 id="hHistory">Jamulus history graph<span style="display: none;" class="wait"> ...</span></h2>
+			<p>This is a display of jams over the last 60 days:</p>
+			<div id="historyGraph"></div>
+		</div><!--}--></div>
+
+		<hr/>
+		<div class="w3c">
+			<p>
+			<a id="validator" href="http://validator.w3.org/check?uri=referer">Valid HTML 5!</a>
+			<a id="cssValidator" href="http://jigsaw.w3.org/css-validator/check/referer"><img style="border:0;width:88px;height:31px" src="http://jigsaw.w3.org/css-validator/images/vcss" alt="Valid CSS!" /></a>
+			</p>
+		</div>
+	</body>
+</html>
