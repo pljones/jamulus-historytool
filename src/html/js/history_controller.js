@@ -38,15 +38,17 @@ function update_graph(url, refresh) {
 
 $(document).ready(function () {
 	$('.no_script').hide(); // We're javascript, so we can...
-	
+
 	$.ajaxSetup({
 		cache: false
 	});
 
 	hg_days = 60;
 	if (typeof HistoryGraph !== 'undefined') {
+		$('#sDays').html(hg_days);
 		history_graph = new HistoryGraph(hg_days);
 	} else {
+		$('#sDays').html('--');
 		history_graph = undefined;
 	}
 

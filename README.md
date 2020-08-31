@@ -35,6 +35,9 @@ You may want to remove some of this.
 
 So if you want to change `index.html`, you will need to update the jQuery, too.
 
+One of the most likely bits is the number of days history to show.  The reference to that in the html is now
+linked to the value in the javascript.
+
 ### Layout
 You should have the `js` and `php` directories as subdirectories of the directory `index.html` lives in:
 ```
