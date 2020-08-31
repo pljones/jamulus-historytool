@@ -326,8 +326,8 @@ class HistoryGraph {
     }
 
     const numDaysInHistory = -curDate.daysTo(oldestDate) + 1;
-	console.log('HistoryGraph.update: numItemsForHistory ' +
-		numItemsForHistory + ', curDate ' + curDate.toISOString() + ', oldestDate ' + oldestDate.toISOString(), ', minDate ' + minDate.toISOString(), ', numDaysInHistory ' + numDaysInHistory);
+//    console.log('HistoryGraph.update: numItemsForHistory ' +
+//    numItemsForHistory + ', curDate ' + curDate.toISOString() + ', oldestDate ' + oldestDate.toISOString(), ', minDate ' + minDate.toISOString(), ', numDaysInHistory ' + numDaysInHistory);
 
     // draw frame of the graph
     this._drawFrame(svgStreamWriter, curDate, numDaysInHistory);

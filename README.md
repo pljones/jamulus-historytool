@@ -14,6 +14,9 @@ This replaces the History Graph that used to be part of the Jamulus server itsel
     but the new version is the same except it's "MIT License" rather than "BSD License" and actually includes
     a LICENSE.txt file!  "In truth, I don't really care what you do with it," says Matt...
 
+* jQuery (1.6.1) and jQueryUI (1.8.13) themselves
+  These are pulled down from the `http://ajax.googleapis.com/ajax/libs` server, so "should just work".
+
 ## Configuration
 
 ### PHP
@@ -43,6 +46,7 @@ You should have the `js` and `php` directories as subdirectories of the director
 ```
 .../index.html
 .../js/...
+.../php/...
 ```
 `index.html` pulls the js files in on that basis and `js/history_controller.js` calls the php script on that basis.
 If you want to change things, you'll need to update both.
