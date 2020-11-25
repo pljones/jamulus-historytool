@@ -57,5 +57,5 @@ $(document).ready(function () {
 	hs_graph = $('#historyGraph');
 
 	base = location.href.replace(/[^\/]*$/, '').replace(/\/*$/, ''); // anything from the last slash goes
-	update_graph(base + '/php/jamulus_history?days=' + hg_days + '&reverse=false', 60000);
+	update_graph(base + '/php/jamulus_history?days=' + hg_days + '&reverse=false&last=true', 60000);
 });

@@ -27,11 +27,12 @@ $jamulus_log = "/opt/Jamulus/log/Jamulus.log";
 
 $lines     = isset($_GET['lines'])     ? $_GET['lines']               : 10;
 $reverse   = isset($_GET['reverse'])   ? $_GET['reverse'] !== 'false' : TRUE;
+$last      = isset($_GET['last'])      ? $_GET['last']) !== 'false'   : $reverse;
 $days      = isset($_GET['days'])      ? $_GET['days']                : 60;
 $max_lines = isset($_GET['max_lines']) ? $_GET['max_lines']           : 20000;
 
 $filearray = @file($jamulus_log);
-if ($reverse) {
+if ($last) {
 	# to the end
 	$filearray = array_slice($filearray, count($filearray) <= $max_lines ? 0 : count($filearray) - $max_lines);
 } else {
