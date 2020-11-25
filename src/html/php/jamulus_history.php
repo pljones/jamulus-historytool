@@ -27,16 +27,16 @@ $jamulus_log = "/opt/Jamulus/log/Jamulus.log";
 
 $lines     = isset($_GET['lines'])     ? $_GET['lines']               : 10;
 $reverse   = isset($_GET['reverse'])   ? $_GET['reverse'] !== 'false' : TRUE;
-$last      = isset($_GET['last'])      ? $_GET['last']) !== 'false'   : $reverse;
+$last      = isset($_GET['last'])      ? $_GET['last'] !== 'false'    : $reverse;
 $days      = isset($_GET['days'])      ? $_GET['days']                : 60;
 $max_lines = isset($_GET['max_lines']) ? $_GET['max_lines']           : 20000;
 
 $filearray = @file($jamulus_log);
 if ($last) {
-	# to the end
+	# last 'max_lines' lines to the end
 	$filearray = array_slice($filearray, count($filearray) <= $max_lines ? 0 : count($filearray) - $max_lines);
 } else {
-	# from the start
+	# 'max_lines' from the start
 	$filearray = array_slice($filearray, 0, $max_lines);
 }
 
@@ -106,5 +106,14 @@ while (count($lastlines) > 0) {
 	}
 }
 
-echo json_encode(array( "jamulus_history" => ($reverse ? array_reverse($result) : $result), "jamulus_clients" => $current_count, "phpUpdated" => date("d F Y", filemtime($_SERVER['SCRIPT_FILENAME'])) ));
+echo json_encode(array(
+	"lines" => $lines,
+	"reverse" => $reverse,
+	"last" => $last,
+	"days" => $days,
+	"max_lines" => $max_lines,
+	"jamulus_history" => ($reverse ? array_reverse($result) : $result),
+	"jamulus_clients" => $current_count,
+	"phpUpdated" => date("d F Y", filemtime($_SERVER['SCRIPT_FILENAME']))
+));
 ?>
