@@ -209,24 +209,29 @@ class HistoryGraph {
     // this lot could all be static
     this.backgroundColor = 'white'; // background
     this.frameColor = 'black'; // frame
-    this.gridColor = 'gray'; // grid
+    this.gridColor = 'gainsboro'; // Y-grid Mon-Fri
+    this.gridColorDark = 'darkgrey'; // Y-grid Sat-Sun, X-grid
     this.textColor = 'black'; // text
 
     this.markerNewColor = 'darkCyan'; // marker for new connection
     this.markerNewLocalColor = 'blue'; // marker for new local connection
     this.markerStopColor = 'red'; // marker for server stop
-    this.markerNewSize = 10;
-    this.markerStopSize = 6;
+    this.markerNewSize = 3; // not less than 2
+    this.markerStopSize = 2; // not less than 2
+    this.markerScale = 1.0;
 
     this.canvasRectX = 0;
     this.canvasRectY = 0;
     this.canvasRectWidth = 640;
     this.canvasRectHeight = 450;
 
-    this.xAxisTextHeight = 22;
+    this.axisFontFamily = 'Arial';
+    this.axisFontWeight = '100';
+    this.axisFontSize = '0.8rem';
+    this.textOffsetToGrid = 3;
+    this.xAxisTextHeight = 15;
 
     this.gridFrameOffset = 10;
-    this.gridWidthWeekend = 3; // should be an odd value
 
     this.gridFrameX = this.canvasRectX + this.gridFrameOffset;
     this.gridFrameY = this.canvasRectY + this.gridFrameOffset;
@@ -236,16 +241,12 @@ class HistoryGraph {
     this.gridFrameRight = this.gridFrameX + this.gridFrameWidth - 1;
     this.gridFrameBottom = this.gridFrameY + this.gridFrameHeight - 1;
 
-    this.axisFontFamily = 'Arial';
-    this.axisFontWeight = '100';
-    this.axisFontSize = 12;
-
     this.yAxisStart = 0;
     this.yAxisEnd = 24;
     this.numTicksY = 5;
+    this.bottomExtraTickLen = 5;
 
-    this.textOffsetToGrid = 3;
-    this.textOffsetX = 18;
+    this.hourYSpace = (0.0 + this.gridFrameHeight - this.markerNewSize * 2) / ( this.yAxisEnd - this.yAxisStart );
 
     this.svgRootAttributes = {
       viewBox:
@@ -271,7 +272,7 @@ class HistoryGraph {
    * August 2020" } call update with response.jamulus_history
    */
   update(jamulusHistory) {
-    console.log(new Date().toISOString() + ': update begin');
+//    console.log(new Date().toISOString() + ': update begin');
     const updateBegin = new Date();
 
     var historyData = [];
@@ -306,6 +307,7 @@ class HistoryGraph {
 
     // store current date for reference
     var curDate = new Date();
+    curDate.setHours(0, 0, 0, 0);
 
     // get oldest date in history
     var oldestDate = curDate.addDays(1); // one day in the future
@@ -326,11 +328,15 @@ class HistoryGraph {
     }
 
     const numDaysInHistory = -curDate.daysTo(oldestDate) + 1;
-//    console.log('HistoryGraph.update: numItemsForHistory ' +
-//    numItemsForHistory + ', curDate ' + curDate.toISOString() + ', oldestDate ' + oldestDate.toISOString(), ', minDate ' + minDate.toISOString(), ', numDaysInHistory ' + numDaysInHistory);
+//    console.log(new Date().toISOString() + ': HistoryGraph.update: numItemsForHistory ' + numItemsForHistory
+//      + ', curDate ' + curDate.toISOString() + ', oldestDate ' + oldestDate.toISOString()
+//      + ', minDate ' + minDate.toISOString() + ', numDaysInHistory ' + numDaysInHistory);
 
     // draw frame of the graph
     this._drawFrame(svgStreamWriter, curDate, numDaysInHistory);
+
+    // determine mark scaling factor
+    this.markerScale = ((1.0 * Math.max(this.gridFrameHeight, this.gridFrameWidth)) / Math.max(24, numDaysInHistory)) / 3;
 
     // add markers
     for (i = 0; i < numItemsForHistory; i++) {
@@ -341,14 +347,8 @@ class HistoryGraph {
 
     svgStreamWriter.writeEndDocument();
 
-    // this appears broken
     const updateEnd = new Date();
-    console.log(
-      new Date().toISOString() +
-        ': update end: ' +
-        (updateEnd - updateBegin) +
-        'ms'
-    );
+//    console.log(new Date().toISOString() + ': update end: ' + (updateEnd.getTime() - updateBegin.getTime()) + 'ms');
 
     return svgStreamWriter.getSvgImage();
   }
@@ -368,16 +368,14 @@ class HistoryGraph {
 
     // calculate step for x-axis ticks so that we get the desired number of
     // ticks -> 5 ticks
-    // ? TODO the following equation does not work as expected but results are
-    // acceptable
     const xAxisTickStep = Math.floor(numTicksX / 5) + 1;
 
     // grid (ticks) for x-axis
     this.dayXSpace = 0.0 + this.gridFrameWidth / (numTicksX + 1);
 
     for (i = 0; i < numTicksX; ++i) {
-      var bottomExtraTickLen = 0;
-      const curX = this.gridFrameX + Math.floor(this.dayXSpace * (i + 1));
+      var bottom = this.gridFrameBottom;
+      const curX = this.gridFrameX + Math.max(1, Math.floor(this.dayXSpace * (i + 1)));
       const curXAxisDate = curDate.addDays(i + 1 - Math.floor(numTicksX));
 
       // label every "xAxisTickStep" tick with MM-DD
@@ -386,37 +384,33 @@ class HistoryGraph {
         var cd = curXAxisDate.toISOString();
         this._text(
           svgStreamWriter,
-          curX - this.textOffsetX,
-          this.gridFrameBottom + this.xAxisTextHeight + this.textOffsetToGrid,
-          cd.substring(8, 10) + '.' + cd.substring(5, 7) + '.'
+          curX,
+          this.gridFrameBottom + this.xAxisTextHeight,
+          cd.substring(8, 10) + '.' + cd.substring(5, 7)
         );
-        bottomExtraTickLen = 5;
+        bottom += this.bottomExtraTickLen;
       }
 
       // regular grid
-      this._line(
-        svgStreamWriter,
-        curX,
-        1 + this.gridFrameY,
-        curX,
-        this.gridFrameBottom + bottomExtraTickLen
-      );
+      var color = this.gridColor;
 
-      // different grid width for weekends (overwrite regular grid)
+      // different grid color for weekends
       if (
         curXAxisDate.getDay() == 6 /* Saturday */ ||
         curXAxisDate.getDay() == 0 /* Sunday */
       ) {
-        const gridWidthWeekendHalf = Math.floor(this.gridWidthWeekend / 2);
-        this._line(
-          svgStreamWriter,
-          curX,
-          1 + this.gridFrameY + gridWidthWeekendHalf,
-          curX,
-          this.gridFrameBottom - gridWidthWeekendHalf,
-          this.gridWidthWeekend
-        );
+        color = this.gridColorDark;
       }
+
+      this._line(
+        svgStreamWriter,
+        curX,
+        this.gridFrameY,
+        curX,
+        bottom,
+        color
+      );
+
     }
 
     // grid (ticks) for y-axis, draw numTicksY - 2 grid lines and
@@ -446,7 +440,8 @@ class HistoryGraph {
           this.gridFrameX,
           curY,
           this.gridFrameRight,
-          curY
+          curY,
+          this.gridColorDark
         );
       }
     }
@@ -455,22 +450,22 @@ class HistoryGraph {
   _addMarker(svgStreamWriter, curHistoryData, curDate, numTicksX) {
     // calculate x-axis offset (difference of days compared to
     // current date)
-    const xAxisOffs = curDate.daysTo(curHistoryData.dateTime);
+    const xAxisOffs = numTicksX + curDate.daysTo(curHistoryData.dateTime);
 
     // check range, if out of range, do not plot anything
-    if (-xAxisOffs > numTicksX - 1) {
+    if (xAxisOffs > numTicksX) {
+      console.log(new Date().toISOString() + ': _addMarker: history item off graph: ' + curHistoryData.dateTime.toISOString());
       return;
     }
 
     // calculate y-axis offset (consider hours and minutes)
-    const yAxisOffs =
-      24.0 -
-      curHistoryData.dateTime.getHours() -
-      (1.0 * curHistoryData.dateTime.getMinutes()) / 60;
+    const yAxisOffs = 24.0 - (
+      ( 60.0 * curHistoryData.dateTime.getHours() + curHistoryData.dateTime.getMinutes() )
+    / 60.0);
 
     // calculate the actual point in the graph (in pixels)
-    var curPointX = this.gridFrameX + Math.floor( this.dayXSpace * ( -0 + ( numTicksX ) + xAxisOffs ) );
-    var curPointY = this.gridFrameY + Math.floor( (0.0 + this.gridFrameHeight) / ( this.yAxisEnd - this.yAxisStart ) * yAxisOffs );
+    var curPointX = this.gridFrameX + Math.max(1, Math.floor( this.dayXSpace  * xAxisOffs ));
+    var curPointY = this.gridFrameY + Math.max(1, Math.floor( this.hourYSpace * yAxisOffs ));
 
     var curPointColour = this.markerNewColor;
     var curPointSize = this.markerNewSize;
@@ -491,10 +486,13 @@ class HistoryGraph {
         break;
     }
 
+    // apply scaling factor
+    curPointSize = Math.max(curPointSize, Math.floor(this.markerScale * curPointSize));
+
     this._point(
       svgStreamWriter,
-      Math.floor(curPointX - curPointSize / 2),
-      Math.floor(curPointY - curPointSize / 2),
+      curPointX - Math.max(1, Math.floor(curPointSize / 2.0)),
+      curPointY,
       curPointSize,
       curPointColour
     );
@@ -528,11 +526,11 @@ class HistoryGraph {
     svgStreamWriter.writeEndElement();
   }
 
-  _line(svgStreamWriter, x1, y1, x2, y2, strokeWidth = 1) {
+  _line(svgStreamWriter, x1, y1, x2, y2, strokeColor, strokeWidth = 1) {
     svgStreamWriter.writeEmptyElement('line');
     svgStreamWriter.writeAttributes({ x1: x1, y1: y1, x2: x2, y2: y2 });
     svgStreamWriter.writeAttributes({
-      stroke: this.gridColor,
+      stroke: strokeColor,
       'stroke-width': strokeWidth,
     });
   }
