@@ -222,14 +222,14 @@ class HistoryGraph {
 
     this.canvasRectX = 0;
     this.canvasRectY = 0;
-    this.canvasRectWidth = 640;
-    this.canvasRectHeight = 450;
+    this.canvasRectHeight = 1440 + 120;
+    this.canvasRectWidth = this.canvasRectHeight * 16 / 9;
 
     this.axisFontFamily = 'Arial';
     this.axisFontWeight = '100';
-    this.axisFontSize = '0.8rem';
-    this.textOffsetToGrid = 3;
-    this.xAxisTextHeight = 15;
+    this.axisFontSize = '3rem';
+    this.textOffsetToGrid = 6;
+    this.xAxisTextHeight = 36;
 
     this.gridFrameOffset = 10;
 
@@ -239,14 +239,14 @@ class HistoryGraph {
     this.gridFrameHeight =
       this.canvasRectHeight - 2 * this.gridFrameOffset - this.xAxisTextHeight;
     this.gridFrameRight = this.gridFrameX + this.gridFrameWidth - 1;
-    this.gridFrameBottom = this.gridFrameY + this.gridFrameHeight - 1;
+    this.gridFrameBottom = this.gridFrameY + this.gridFrameHeight/* - 0*/;
 
     this.yAxisStart = 0;
     this.yAxisEnd = 24;
     this.numTicksY = 5;
-    this.bottomExtraTickLen = 5;
+    this.bottomExtraTickLen = 12;
 
-    this.hourYSpace = (0.0 + this.gridFrameHeight - this.markerNewSize * 2) / ( this.yAxisEnd - this.yAxisStart );
+    this.hourYSpace = (0.0 + this.gridFrameHeight/* - this.markerNewSize * 0*/) / ( this.yAxisEnd - this.yAxisStart );
 
     this.svgRootAttributes = {
       viewBox:
@@ -386,7 +386,7 @@ class HistoryGraph {
           svgStreamWriter,
           curX,
           this.gridFrameBottom + this.xAxisTextHeight,
-          cd.substring(8, 10) + '.' + cd.substring(5, 7)
+          cd.substring(0, 10)//cd.substring(8, 10) + '.' + cd.substring(5, 7)
         );
         bottom += this.bottomExtraTickLen;
       }
@@ -464,8 +464,8 @@ class HistoryGraph {
     / 60.0);
 
     // calculate the actual point in the graph (in pixels)
-    var curPointX = this.gridFrameX + Math.max(1, Math.floor( this.dayXSpace  * xAxisOffs ));
-    var curPointY = this.gridFrameY + Math.max(1, Math.floor( this.hourYSpace * yAxisOffs ));
+    var curPointX = this.gridFrameX - 1/* - frame + frame offset */ + Math.max(1, Math.floor( this.dayXSpace  * xAxisOffs ));
+    var curPointY = this.gridFrameY - 1/* - frame + frame offset */ + Math.max(1, Math.floor( this.hourYSpace * yAxisOffs ));
 
     var curPointColour = this.markerNewColor;
     var curPointSize = this.markerNewSize;
@@ -492,7 +492,7 @@ class HistoryGraph {
     this._point(
       svgStreamWriter,
       curPointX - Math.max(1, Math.floor(curPointSize / 2.0)),
-      curPointY,
+      curPointY - Math.max(1, Math.floor(curPointSize / 2.0)),
       curPointSize,
       curPointColour
     );
