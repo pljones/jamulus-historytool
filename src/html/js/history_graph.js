@@ -62,7 +62,7 @@ class SvgStreamWriter {
   writingElement = 0;
 
   constructor(svgImage) {
-        this.svgImage = svgImage;
+    this.svgImage = svgImage;
   }
 
   getSvgImage() {
@@ -174,7 +174,7 @@ class SvgStreamWriter {
 //{
 class HistoryItem {
   constructor(dateTime, type) {
-        this.dateTime = new Date(dateTime.valueOf());
+    this.dateTime = new Date(dateTime.valueOf());
     this.type = type;
   }
 }
@@ -203,7 +203,7 @@ class HistoryGraph {
   dayXSpace;
 
   constructor(histMaxDays) {
-        this.histMaxDays = histMaxDays;
+    this.histMaxDays = histMaxDays;
 
     //{
     // this lot could all be static
@@ -222,16 +222,16 @@ class HistoryGraph {
 
     this.canvasRectX = 0;
     this.canvasRectY = 0;
-    this.canvasRectHeight = 1440 + 120;
-    this.canvasRectWidth = this.canvasRectHeight * 16 / 9;
+    this.canvasRectWidth = 1.0 * window.innerWidth / 5.0 * this.markerNewSize + 2;
+    this.canvasRectHeight = (9.0 * this.canvasRectWidth / 16.0) * 1.12;
 
     this.axisFontFamily = 'Arial';
     this.axisFontWeight = '100';
-    this.axisFontSize = '3rem';
-    this.textOffsetToGrid = 6;
-    this.xAxisTextHeight = 36;
+    this.axisFontSize = this.canvasRectHeight / 480.0
+    this.textOffsetToGrid = this.axisFontSize * 4;
+    this.xAxisTextHeight = this.axisFontSize * 15;
 
-    this.gridFrameOffset = 10;
+    this.gridFrameOffset = this.axisFontSize * 10;
 
     this.gridFrameX = this.canvasRectX + this.gridFrameOffset;
     this.gridFrameY = this.canvasRectY + this.gridFrameOffset;
@@ -384,9 +384,9 @@ class HistoryGraph {
         var cd = curXAxisDate.toISOString();
         this._text(
           svgStreamWriter,
-          curX,
+          curX + this.textOffsetToGrid,
           this.gridFrameBottom + this.xAxisTextHeight,
-          cd.substring(0, 10)//cd.substring(8, 10) + '.' + cd.substring(5, 7)
+          cd.substring(0, 10)
         );
         bottom += this.bottomExtraTickLen;
       }
@@ -520,7 +520,7 @@ class HistoryGraph {
     svgStreamWriter.writeAttributes({
       'font-family': this.axisFontFamily,
       'font-weight': this.axisFontWeight,
-      'font-size': this.axisFontSize,
+      'font-size': this.axisFontSize + 'rem',
     });
     svgStreamWriter.writeCharacters(value);
     svgStreamWriter.writeEndElement();
