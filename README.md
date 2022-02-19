@@ -19,6 +19,11 @@ This replaces the History Graph that used to be part of the Jamulus server itsel
 
 ## Configuration
 
+### Apache HTTPD
+
+I have my Apache HTTPD configured to find php files in all the right places... so I tend to leave ".php" off names
+when invoking them.  If the call fails, either edit the js or change your Apache config. 
+
 ### PHP
 You will need to specify the server-side location of your Jamulus log.
 This all works only if you are running the webserver (including the PHP) on a box that has access to the Jamulus log.
