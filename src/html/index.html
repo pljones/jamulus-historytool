@@ -3,8 +3,8 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>Jamulus Server History Graph</title>
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-		<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"></script>
+		<script src="https://unpkg.com/jquery@3.6.0/dist/jquery.js"></script>
+		<script src="https://unpkg.com/dayjs@1.11.1/dayjs.min.js"></script>
 		<script src="js/jquery.timer.js"></script>
 		<script src="js/history_graph.js"></script>
 		<script src="js/history_controller.js"></script>
@@ -12,14 +12,20 @@
 		<meta name="googlebot" content="noarchive" />
 		<meta name="keywords" content="Jamulus, connections, history" />
 		<meta name="author" content="Peter L Jones" />
+		<link rel="icon" href="data:;base64,iVBORw0KGgo=">
 	</head>
 	<body>
 		<p class="no_script">Please note that this page <strong>requires</strong> JavaScript enabled.</p>
 
-		<div style="width: 60%; margin: 0.2em auto;"><!--{--><div id="jamulus_history" style="margin: 0; border: thick solid #eeeeff;">
+		<div style="width: 75%; margin: 0.2em auto;"><!--{--><div id="jamulus_history" style="margin: 0; border: thick solid #eeeeff;">
 			<h2 id="hHistory">Jamulus history graph<span style="display: none;" class="wait"> ...</span></h2>
 			<p>This is a display of jams over the last <span id="sDays"></span> days:</p>
-			<div id="historyGraph"></div>
+			<div id="historyGraph">
+				<p id="pre_spinner" style="display: none;">Loading...</p>
+				<p id="formatting_spinner" style="display: none;">Formatting...</p>
+				<p id="rendering_spinner" style="display: none;">Rendering...</p>
+				<p id="loading_failed" style="display: none;">Loading failed</p>
+			</div>
 		</div><!--}--></div>
 
 		<hr/>
